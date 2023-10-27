@@ -48,9 +48,7 @@ button.operator.math {
     font-size: 2.7rem;
 }
 
-button.operator.plus-minus,
-button.operator.percent,
-button.operator.all-clear {
+button.operator.other {
     background-color: rgb(212, 212, 210);
     color: rgb(28, 28, 28);
 }
