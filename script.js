@@ -68,6 +68,19 @@ function updateDisplay(element, type) {
             clearDisplay();
 
             newState = false;
+        case 'plus-minus':
+            clearDisplay();
+            
+            const typeNum1 = typeof displayArr[0];
+            const typeNum2 = typeof displayArr[2];
+
+            if (displayArr.length == 1 && typeNum1 != number) {
+                display.textContent = '−' + displayArr[0];
+            } else if (displayArr.length == 3 && typeNum2 != number) {
+                display.textContent = '−' + displayArr[2];
+            }
+
+            break;
     }
 }
 
