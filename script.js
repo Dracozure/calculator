@@ -21,7 +21,7 @@ Array.from(mathOperatorButtons).forEach(operator => {
     });
 });
 
-let currentOperationString = '';
+let currentOperationString = '0';
 let lastOperatorUsed = null;
 let lastOperandUsed = null;
 
@@ -74,14 +74,18 @@ function updateDisplay(element, type) {
 
                 lastOperandUsed = currentOperationArr[2];
             } else if (currentOperationArr.length === 2) {
-                const calcResult = operate(currentOperationArr[0], currentOperationArr[0], lastOperatorUsed);
+                const calcResult = (typeof +currentOperationArr[0] == 'number') 
+                ? operate(currentOperationArr[0], currentOperationArr[0], lastOperatorUsed)
+                : operate(currentOperationArr[1], currentOperationArr[1], lastOperatorUsed);
 
                 clearDisplay();
 
                 display.textContent = calcResult.toString();
                 currentOperationString = calcResult.toString();
 
-                lastOperandUsed = currentOperationArr[0];
+                lastOperandUsed = (typeof +currentOperationArr[0]) == 'number'
+                ? currentOperationArr[0]
+                : currentOperationArr[1];
             } else if (currentOperationArr.length === 1) {
                 if (lastOperandUsed == null) {
                     return;
@@ -100,7 +104,7 @@ function updateDisplay(element, type) {
             break;
         case 'all-clear':
             display.textContent = '0';
-            currentOperationString = '';
+            currentOperationString = '0';
             lastOperatorUsed = null;
             lastOperandUsed = null;
             newState = true;
