@@ -1,13 +1,10 @@
 let a;
 let operator;
 let b;
-let newState = false; //When "equal" is entered and followed by a number, a new state is triggered
-                      // and reset display
+let newState = true; //When "equal" is entered and followed by a number, a new state is triggered and display is reset
 
 const numButtons = document.querySelectorAll('.number');
-const mathOperatorButtons = document.querySelectorAll('.operator.math');
-const otherOperatorButtons = document.querySelectorAll('.operator.other');
-const decimalOperatorButton = document.getElementById('decimal');
+const mathOperatorButtons = document.querySelectorAll('.operator');
 const display = document.getElementById('display');
 
 Array.from(numButtons).forEach(num => {
@@ -24,55 +21,103 @@ Array.from(mathOperatorButtons).forEach(operator => {
     });
 });
 
+let currentOperationString = '';
+let lastOperatorUsed = null;
+let lastOperandUsed = null;
+
 function updateDisplay(element, type) {
-    const displayArr = display.textContent.trim().split(' ');
+    const currentOperationArr = currentOperationString.trim().split(' ');
 
     switch (type) {
         case 'number':
-            if (display.textContent === '0' || (newState && displayArr.length == 1)) {
+            if (newState) {
                 clearDisplay();
 
-                if (newState) {
-                    newState = false;
-                }
+                newState = false;
             }
 
             display.textContent += element.textContent;
+            currentOperationString += element.textContent;
 
             break;
         case 'plus':
         case 'minus':
         case 'divide':
         case 'multiply':
-            clearDisplay();
+            if (currentOperationArr.length === 3) {
+                const calcResult = operate(currentOperationArr[0], currentOperationArr[2], currentOperationArr[1]);
 
-            if (displayArr.length == 3) {
-                display.textContent = `${operate(displayArr[0], displayArr[2], displayArr[1])} 
-                ${element.textContent} `;
-            } else {
-                display.textContent = `${displayArr[0]} ${element.textContent} `;
+                clearDisplay();
+
+                display.textContent = calcResult.toString();
+                currentOperationString = calcResult.toString() + ` ${element.textContent} `;
+
+                lastOperandUsed = currentOperationArr[2];
+            } else if (currentOperationArr.length === 1) {
+                currentOperationString += ` ${element.textContent} `;
+
+                lastOperandUsed = currentOperationArr[0];
             }
+
+            lastOperatorUsed = element.textContent;
+            newState = true;
 
             break;
         case 'equal':
-            if (displayArr.length == 3) {
+            if (currentOperationArr.length === 3) {
+                const calcResult = operate(currentOperationArr[0], currentOperationArr[2], currentOperationArr[1]);
+
                 clearDisplay();
 
-                display.textContent = operate(displayArr[0], displayArr[2], displayArr[1]);
+                display.textContent = calcResult.toString();
+                currentOperationString = calcResult.toString();
 
-                newState = true;
+                lastOperandUsed = currentOperationArr[2];
+            } else if (currentOperationArr.length === 2) {
+                const calcResult = operate(currentOperationArr[0], currentOperationArr[0], lastOperatorUsed);
+
+                clearDisplay();
+
+                display.textContent = calcResult.toString();
+                currentOperationString = calcResult.toString();
+
+                lastOperandUsed = currentOperationArr[0];
+            } else if (currentOperationArr.length === 1) {
+                if (lastOperandUsed == null) {
+                    return;
+                }
+
+                const calcResult = operate(currentOperationArr[0], lastOperandUsed, lastOperatorUsed);
+
+                clearDisplay();
+
+                display.textContent = calcResult.toString();
+                currentOperationString = calcResult.toString();
             }
+
+            newState = true;
 
             break;
         case 'all-clear':
-            clearDisplay();
+            display.textContent = '0';
+            currentOperationString = '';
+            lastOperatorUsed = null;
+            lastOperandUsed = null;
+            newState = true;
 
-            newState = false;
+            break;
         case 'plus-minus':
             clearDisplay();
-            
-            const typeNum1 = typeof displayArr[0];
-            const typeNum2 = typeof displayArr[2];
+
+            if (displayArr.length == 1 && typeNum1 != number) {
+                display.textContent = '−' + displayArr[0];
+            } else if (displayArr.length == 3 && typeNum2 != number) {
+                display.textContent = '−' + displayArr[2];
+            }
+
+            break;
+        case 'percent':
+            clearDisplay();
 
             if (displayArr.length == 1 && typeNum1 != number) {
                 display.textContent = '−' + displayArr[0];
