@@ -24,6 +24,7 @@ Array.from(mathOperatorButtons).forEach(operator => {
 let currentOperationString = '0';
 let lastOperatorUsed = null;
 let lastOperandUsed = null;
+let percentValue = null; //Stores temporary value for when percent operator is used
 
 function updateDisplay(element, type) {
     const currentOperationArr = currentOperationString.trim().split(' ');
@@ -106,8 +107,10 @@ function updateDisplay(element, type) {
 
                 lastOperandUsed = currentOperationArr[0];
             } else if (currentOperationArr.length === 1) {
-                if (lastOperandUsed == null) {
-                    return;
+                if (lastOperatorUsed == null) {
+                    currentOperationString = '0';
+                    
+                    break;
                 }
 
                 const calcResult = operate(currentOperationArr[0], lastOperandUsed, lastOperatorUsed);
@@ -236,6 +239,10 @@ function updateDisplay(element, type) {
             newState = false;
 
             break;
+        case 'percent':
+            if (currentOperationArr.length == 1) {
+                ;
+            }
     }
 }
 
