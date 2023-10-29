@@ -21,7 +21,7 @@ Array.from(mathOperatorButtons).forEach(operator => {
     });
 });
 
-let currentOperationString = '';
+let currentOperationString = '0';
 let lastOperatorUsed = null;
 let lastOperandUsed = null;
 
@@ -41,6 +41,20 @@ function updateDisplay(element, type) {
                 display.textContent = display.textContent.slice(0, -1);
             }
 
+            if (currentOperationArr.length === 1) {
+                if (currentOperationArr[0] == '0') {
+                    clearDisplay();
+                    
+                    currentOperationString = '';
+                }  
+            } else if (currentOperationArr.length === 3) {
+                if (currentOperationArr[2] == '0') {
+                    clearDisplay();
+
+                    currentOperationArr = currentOperationArr.slice(0, -1);
+                }
+            }
+
             display.textContent += element.textContent;
             currentOperationString += element.textContent;
 
@@ -58,6 +72,8 @@ function updateDisplay(element, type) {
                 currentOperationString = calcResult.toString() + ` ${element.textContent} `;
 
                 lastOperandUsed = currentOperationArr[2];
+            } else if (currentOperationArr.length === 2) {
+                ;
             } else if (currentOperationArr.length === 1) {
                 currentOperationString += ` ${element.textContent} `;
 
@@ -109,7 +125,7 @@ function updateDisplay(element, type) {
             break;
         case 'all-clear':
             display.textContent = '0';
-            currentOperationString = '';
+            currentOperationString = '0';
             lastOperatorUsed = null;
             lastOperandUsed = null;
             newState = true;
@@ -157,8 +173,6 @@ function updateDisplay(element, type) {
 
                     display.textContent = '-0';
                 }
-
-                newState = false;
             } else if (currentOperationArr.length === 1) {
                 if (currentOperationArr[0].includes('-')) {
                     currentOperationString = currentOperationArr[0].slice(1);
@@ -170,6 +184,8 @@ function updateDisplay(element, type) {
                     display.textContent = '-' + currentOperationArr[0];
                 }
             }
+
+            newState = false;
 
             break;
     }
