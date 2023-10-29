@@ -186,6 +186,56 @@ function updateDisplay(element, type) {
             newState = false;
 
             break;
+        case 'decimal':
+            if (currentOperationArr.length === 1) {
+                let numLength = currentOperationArr[0].length;
+
+                if (currentOperationArr[0].includes('.')) {
+                    numLength--;
+                } else if (currentOperationArr[0].includes('-')) {
+                    numLength--;
+                }
+
+                if (numLength == 9) {
+                    return;
+                }
+            } else if (currentOperationArr.length === 3) {
+                const numLength = currentOperationArr[2].length;
+
+                if (currentOperationArr[2].includes('.')) {
+                    numLength--;
+                } else if (currentOperationArr[2].includes('-')) {
+                    numLength--;
+                }
+
+                if (numLength == 9) {
+                    return;
+                }
+            }
+
+            clearDisplay();
+
+            if (currentOperationArr.length === 1) {
+                if (!currentOperationArr[0].includes('.')) {
+                    currentOperationString = currentOperationArr[0] + '.';
+
+                    display.textContent = currentOperationArr[0] + '.';
+                }
+            } else if (currentOperationArr.length === 2) {
+                currentOperationString = currentOperationString + '0.';
+
+                display.textContent = '0.';
+            } else if (currentOperationArr.length === 3) {
+                if (!currentOperationArr[2].includes('.')) {
+                    currentOperationString = currentOperationString + '.';
+
+                    display.textContent = currentOperationArr[2] + '.';
+                }
+            }
+
+            newState = false;
+
+            break;
     }
 }
 
