@@ -188,24 +188,28 @@ function updateDisplay(element, type) {
             break;
         case 'decimal':
             if (currentOperationArr.length === 1) {
-                let numLength = currentOperationArr[0].length;
+                let numLength;
 
                 if (currentOperationArr[0].includes('.')) {
-                    numLength--;
-                } else if (currentOperationArr[0].includes('-')) {
-                    numLength--;
+                    return;
+                }
+
+                for (let char in currentOperationArr[0]) {
+                    numLength += (typeof +char == 'number') ? 1 : 0;
                 }
 
                 if (numLength == 9) {
                     return;
                 }
             } else if (currentOperationArr.length === 3) {
-                const numLength = currentOperationArr[2].length;
+                let numLength;
 
                 if (currentOperationArr[2].includes('.')) {
-                    numLength--;
-                } else if (currentOperationArr[2].includes('-')) {
-                    numLength--;
+                    return;
+                }
+
+                for (let char in currentOperationArr[2]) {
+                    numLength += (typeof +char == 'number') ? 1 : 0;
                 }
 
                 if (numLength == 9) {
@@ -216,21 +220,17 @@ function updateDisplay(element, type) {
             clearDisplay();
 
             if (currentOperationArr.length === 1) {
-                if (!currentOperationArr[0].includes('.')) {
-                    currentOperationString = currentOperationArr[0] + '.';
+                currentOperationString = currentOperationArr[0] + '.';
 
-                    display.textContent = currentOperationArr[0] + '.';
-                }
+                display.textContent = currentOperationArr[0] + '.';
             } else if (currentOperationArr.length === 2) {
                 currentOperationString = currentOperationString + '0.';
 
                 display.textContent = '0.';
             } else if (currentOperationArr.length === 3) {
-                if (!currentOperationArr[2].includes('.')) {
-                    currentOperationString = currentOperationString + '.';
+                currentOperationString = currentOperationString + '.';
 
-                    display.textContent = currentOperationArr[2] + '.';
-                }
+                display.textContent = currentOperationArr[2] + '.';
             }
 
             newState = false;
