@@ -190,6 +190,9 @@ function updateDisplay(element, type) {
 
             break;
         case 'decimal':
+            percentageIterations = 1;
+            percentValue = null;
+
             if (currentOperationArr.length === 1) {
                 let numLength;
 
@@ -241,21 +244,28 @@ function updateDisplay(element, type) {
             break;
         case 'percent':
             if (currentOperationArr.length === 1) {
-                percentValue = getPercentage(currentOperationArr[0]);
+                percentValue = currentOperationArr[0] / (100 ** percentageIterations);
             } else if (currentOperationArr.length === 2) {
                 if (currentOperationArr[1] == '÷' || currentOperationArr[1] == '×') {
-                    percentValue = getPercentage(currentOperationArr[0]);
+                    percentValue = currentOperationArr[0] / (100 ** percentageIterations);
                 } else {
                     percentValue = operate((currentOperationArr[0] ** (percentageIterations + 1)), (10 ** (2 * percentageIterations)), '÷');
                 }
             } else if (currentOperationArr.length === 3) {
                 if (currentOperationArr[1] == '÷' || currentOperationArr[1] == '×') {
-                    percentValue = getPercentage(currentOperationArr[2]);
+                    percentValue = currentOperationArr[2] / (100 ** percentageIterations);
                 } else {
-                    percentValue = operate((currentOperationArr[0] / 100), currentOperationArr[2], '×');
+                    percentValue = operate((currentOperationArr[0] ** percentageIterations), (100 ** percentageIterations), '÷') * currentOperationArr[2];
                 }
             }
+
+            percentageIterations++;
+
+            return;
     }
+
+    percentageIterations = 1;
+    percentValue = null;
 }
 
 function operate(a, b, operator) {
