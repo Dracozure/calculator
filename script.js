@@ -1,6 +1,3 @@
-let a;
-let operator;
-let b;
 let newState = true; //When "equal" is entered and followed by a number, a new state is triggered and display is reset
 
 const numButtons = document.querySelectorAll('.number');
@@ -25,6 +22,7 @@ let currentOperationString = '0';
 let lastOperatorUsed = null;
 let lastOperandUsed = null;
 let percentValue = null; //Stores temporary value for when percent operator is used
+let percentageIterations = 1; //Stores value of consecutive percent operator calculations for one operand
 
 function updateDisplay(element, type) {
     const currentOperationArr = currentOperationString.trim().split(' ');
@@ -109,7 +107,7 @@ function updateDisplay(element, type) {
             } else if (currentOperationArr.length === 1) {
                 if (lastOperatorUsed == null) {
                     currentOperationString = '0';
-                    
+
                     break;
                 }
 
@@ -130,6 +128,8 @@ function updateDisplay(element, type) {
             lastOperatorUsed = null;
             lastOperandUsed = null;
             newState = true;
+            let percentValue = null;
+            let percentageIterations = 1;
 
             break;
         case 'plus-minus':
@@ -240,8 +240,20 @@ function updateDisplay(element, type) {
 
             break;
         case 'percent':
-            if (currentOperationArr.length == 1) {
-                ;
+            if (currentOperationArr.length === 1) {
+                percentValue = getPercentage(currentOperationArr[0]);
+            } else if (currentOperationArr.length === 2) {
+                if (currentOperationArr[1] == '÷' || currentOperationArr[1] == '×') {
+                    percentValue = getPercentage(currentOperationArr[0]);
+                } else {
+                    percentValue = operate((currentOperationArr[0] ** (percentageIterations + 1)), (10 ** (2 * percentageIterations)), '÷');
+                }
+            } else if (currentOperationArr.length === 3) {
+                if (currentOperationArr[1] == '÷' || currentOperationArr[1] == '×') {
+                    percentValue = getPercentage(currentOperationArr[2]);
+                } else {
+                    percentValue = operate((currentOperationArr[0] / 100), currentOperationArr[2], '×');
+                }
             }
     }
 }
