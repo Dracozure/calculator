@@ -21,7 +21,7 @@ Array.from(mathOperatorButtons).forEach(operator => {
     });
 });
 
-let currentOperationString = '0';
+let currentOperationString = '';
 let lastOperatorUsed = null;
 let lastOperandUsed = null;
 
@@ -34,6 +34,11 @@ function updateDisplay(element, type) {
                 clearDisplay();
 
                 newState = false;
+            }
+
+            if (display.textContent == '-0') { //Handling of edge case where user press plus-minus operator before a number, resulting in a -0 result
+                currentOperationString = currentOperationString.slice(0, -1);
+                display.textContent = display.textContent.slice(0, -1);
             }
 
             display.textContent += element.textContent;
@@ -104,7 +109,7 @@ function updateDisplay(element, type) {
             break;
         case 'all-clear':
             display.textContent = '0';
-            currentOperationString = '0';
+            currentOperationString = '';
             lastOperatorUsed = null;
             lastOperandUsed = null;
             newState = true;
@@ -113,20 +118,57 @@ function updateDisplay(element, type) {
         case 'plus-minus':
             clearDisplay();
 
-            if (displayArr.length == 1 && typeNum1 != number) {
-                display.textContent = '−' + displayArr[0];
-            } else if (displayArr.length == 3 && typeNum2 != number) {
-                display.textContent = '−' + displayArr[2];
-            }
+            if (currentOperationArr.length === 3) {
+                if (currentOperationArr[2].includes('-')) {
+                    currentOperationString = 
+                    currentOperationArr[0]
+                    + ` ${currentOperationArr[1]} `
+                    + currentOperationArr[2].slice(1);
 
-            break;
-        case 'percent':
-            clearDisplay();
+                    display.textContent = currentOperationArr[2].slice(1);
+                }
 
-            if (displayArr.length == 1 && typeNum1 != number) {
-                display.textContent = '−' + displayArr[0];
-            } else if (displayArr.length == 3 && typeNum2 != number) {
-                display.textContent = '−' + displayArr[2];
+                else {
+                    currentOperationString = 
+                    currentOperationArr[0]
+                    + ` ${currentOperationArr[1]} `
+                    + '-' + currentOperationArr[2];
+
+                    display.textContent = '-' + currentOperationArr[2];
+                }
+            } else if (currentOperationArr.length === 2) {
+                const isOperatorFirstIndex = typeof +currentOperationArr[0] != 'number';
+
+                if (isOperatorFirstIndex) {
+                    if (currentOperationArr[1].includes('-')) {
+                        currentOperationString = ` ${currentOperationArr[0]} ${currentOperationArr[1].slice(1)}`;
+
+                        display.textContent = currentOperationArr[1].slice(1);
+                    } else {
+                        currentOperationString = ` ${currentOperationArr[0]} -${currentOperationArr[1]}`;
+
+                        display.textContent = '-' + currentOperationArr[1];
+                    }
+                } else {
+                    currentOperationString = 
+                    currentOperationArr[0]
+                    + ` ${currentOperationArr[1]} `
+                    + '-0';
+
+                    display.textContent = '-0';
+                }
+
+                newState = false;
+            } else if (currentOperationArr.length === 1) {
+                if (currentOperationArr[0].includes('-')) {
+                    currentOperationString = currentOperationArr[0].slice(1);
+
+                    display.textContent = currentOperationArr[0].slice(1);
+                } else {
+                    currentOperationString = '-' + currentOperationArr[0];
+
+                    display.textContent = '-' + currentOperationArr[0];
+                }
             }
 
             break;
