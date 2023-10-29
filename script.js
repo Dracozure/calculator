@@ -73,7 +73,9 @@ function updateDisplay(element, type) {
 
                 lastOperandUsed = currentOperationArr[2];
             } else if (currentOperationArr.length === 2) {
-                ;
+                currentOperationString =
+                currentOperationArr[0]
+                + ` ${element.textContent} `;
             } else if (currentOperationArr.length === 1) {
                 currentOperationString += ` ${element.textContent} `;
 
@@ -95,18 +97,14 @@ function updateDisplay(element, type) {
 
                 lastOperandUsed = currentOperationArr[2];
             } else if (currentOperationArr.length === 2) {
-                const calcResult = (typeof +currentOperationArr[0] == 'number') 
-                ? operate(currentOperationArr[0], currentOperationArr[0], lastOperatorUsed)
-                : operate(currentOperationArr[1], currentOperationArr[1], lastOperatorUsed);
+                const calcResult = operate(currentOperationArr[0], currentOperationArr[0], lastOperatorUsed);
 
                 clearDisplay();
 
                 display.textContent = calcResult.toString();
                 currentOperationString = calcResult.toString();
 
-                lastOperandUsed = (typeof +currentOperationArr[0]) == 'number'
-                ? currentOperationArr[0]
-                : currentOperationArr[1];
+                lastOperandUsed = currentOperationArr[0];
             } else if (currentOperationArr.length === 1) {
                 if (lastOperandUsed == null) {
                     return;
