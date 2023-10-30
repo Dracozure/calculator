@@ -257,6 +257,11 @@ function updateDisplay(element, type) {
             }
 
             if (currentOperationArr.length === 1) {
+                if (newState) {
+                    currentOperationArr[0] = '0';
+                    currentOperationString = '0';
+                }
+
                 let numLength;
 
                 if (currentOperationArr[0].includes('.')) {
