@@ -25,22 +25,35 @@ let percentValue = null; //Stores temporary value for when percent operator is u
 let percentageIterations = 1; //Stores value of consecutive percent operator calculations for one operand
 
 function updateDisplay(element, type) {
-    const currentOperationArr = currentOperationString.trim().split(' ');
+    let currentOperationArr = currentOperationString.trim().split(' ');
 
     switch (type) {
         case 'number':
             if (percentValue != null) {
-                if (currentOperationArr.length === 1) {
+                clearDisplay();
+
+                if (currentOperationArr.length === 1 || currentOperationArr.length === 2) {
                     currentOperationString = '0';
                     currentOperationArr[0] = '0';
 
-                    percentValue = null;
-                    percentageIterations = 1;
+                } else if (currentOperationArr.length === 3) {
+                    currentOperationString = 
+                    currentOperationArr[0]
+                    + ` ${currentOperationArr[1]} `;
+                    currentOperationArr = currentOperationArr.slice(0, -1);
                 }
+
+                percentValue = null;
+                percentageIterations = 1;
             }
 
             if (newState) {
                 clearDisplay();
+
+                if (currentOperationArr.length === 1) {
+                    currentOperationString = '0';
+                    currentOperationArr[0] = '0';
+                }
 
                 newState = false;
             }
@@ -159,14 +172,12 @@ function updateDisplay(element, type) {
             clearDisplay();
 
             if (percentValue != null) {
-                if (currentOperationArr.length === 1) {
-                    if (!percentValue.toString().includes('-')) {
-                        display.textContent = '-' + percentValue;
-                        percentValue = '-' + percentValue;
-                    } else {
-                        display.textContent = percentValue.toString().slice(1);
-                        percentValue = percentValue.toString().slice(1);
-                    }
+                if (!percentValue.toString().includes('-')) {
+                    display.textContent = '-' + percentValue;
+                    percentValue = '-' + percentValue;
+                } else {
+                    display.textContent = percentValue.toString().slice(1);
+                    percentValue = percentValue.toString().slice(1);
                 }
 
                 newState = false;
@@ -237,6 +248,11 @@ function updateDisplay(element, type) {
                 if (currentOperationArr.length === 1) {
                     currentOperationString = '';
                     currentOperationArr[0] = '0';
+                } else if (currentOperationArr.length === 3) {
+                    currentOperationString = 
+                    currentOperationArr[0]
+                    + ` ${currentOperationArr[1]} `;
+                    currentOperationArr = currentOperationArr.slice(0, -1);
                 }
             }
 
