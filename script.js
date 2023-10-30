@@ -29,6 +29,16 @@ function updateDisplay(element, type) {
 
     switch (type) {
         case 'number':
+            if (percentValue != null) {
+                if (currentOperationArr.length === 1) {
+                    currentOperationString = '0';
+                    currentOperationArr[0] = '0';
+
+                    percentValue = null;
+                    percentageIterations = 1;
+                }
+            }
+
             if (newState) {
                 clearDisplay();
 
@@ -52,7 +62,7 @@ function updateDisplay(element, type) {
 
                     currentOperationArr = currentOperationArr.slice(0, -1);
                 }
-            }
+            } 
 
             display.textContent += element.textContent;
             currentOperationString += element.textContent;
@@ -62,6 +72,16 @@ function updateDisplay(element, type) {
         case 'minus':
         case 'divide':
         case 'multiply':
+            if (percentValue != null) {
+                if (currentOperationArr.length === 1) {
+                    currentOperationString = percentValue.toString();
+                    currentOperationArr[0] = percentValue.toString();
+                }
+
+                percentValue = null;
+                percentageIterations = 1;
+            }
+
             if (currentOperationArr.length === 3) {
                 const calcResult = operate(currentOperationArr[0], currentOperationArr[2], currentOperationArr[1]);
 
@@ -119,6 +139,9 @@ function updateDisplay(element, type) {
                 currentOperationString = calcResult.toString();
             }
 
+            percentValue = null;
+            percentageIterations = 1;
+
             newState = true;
 
             break;
@@ -128,12 +151,28 @@ function updateDisplay(element, type) {
             lastOperatorUsed = null;
             lastOperandUsed = null;
             newState = true;
-            let percentValue = null;
-            let percentageIterations = 1;
+            percentValue = null;
+            percentageIterations = 1;
 
             break;
         case 'plus-minus':
             clearDisplay();
+
+            if (percentValue != null) {
+                if (currentOperationArr.length === 1) {
+                    if (!percentValue.toString().includes('-')) {
+                        display.textContent = '-' + percentValue;
+                        percentValue = '-' + percentValue;
+                    } else {
+                        display.textContent = percentValue.toString().slice(1);
+                        percentValue = percentValue.toString().slice(1);
+                    }
+                }
+
+                newState = false;
+
+                break;
+            }
 
             if (currentOperationArr.length === 3) {
                 if (currentOperationArr[2].includes('-')) {
@@ -190,8 +229,16 @@ function updateDisplay(element, type) {
 
             break;
         case 'decimal':
-            percentageIterations = 1;
-            percentValue = null;
+            if (percentValue != null) {
+                clearDisplay();
+                percentageIterations = 1;
+                percentValue = null;
+
+                if (currentOperationArr.length === 1) {
+                    currentOperationString = '';
+                    currentOperationArr[0] = '0';
+                }
+            }
 
             if (currentOperationArr.length === 1) {
                 let numLength;
@@ -243,6 +290,10 @@ function updateDisplay(element, type) {
 
             break;
         case 'percent':
+            clearDisplay();
+
+            const negPosSign = (percentValue && percentValue.toString().includes('-')) ? -1 : 1;
+
             if (currentOperationArr.length === 1) {
                 percentValue = currentOperationArr[0] / (100 ** percentageIterations);
             } else if (currentOperationArr.length === 2) {
@@ -259,13 +310,13 @@ function updateDisplay(element, type) {
                 }
             }
 
+            percentValue *= negPosSign;
+
+            display.textContent = percentValue.toString();
             percentageIterations++;
 
             return;
     }
-
-    percentageIterations = 1;
-    percentValue = null;
 }
 
 function operate(a, b, operator) {
