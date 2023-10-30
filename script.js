@@ -95,6 +95,13 @@ function updateDisplay(element, type) {
                     + ` ${currentOperationArr[1]} `
                     + percentValue;
                     currentOperationArr[2] = percentValue;
+                } else if (currentOperationArr.length === 2) {
+                    clearDisplay();
+
+                    percentValue = null;
+                    percentageIterations = 1;
+
+                    display.textContent = currentOperationArr[0];
                 }
 
                 percentValue = null;
@@ -132,7 +139,14 @@ function updateDisplay(element, type) {
                     + ` ${currentOperationArr[1]} `
                     + percentValue;
                     currentOperationArr[2] = percentValue;
+                } else if (currentOperationArr.length === 2) {
+                    const tempArr = [currentOperationArr[0], currentOperationArr[1], percentValue];
+                    currentOperationString += percentValue;
+                    currentOperationArr = tempArr;
                 }
+
+                percentValue = null;
+                percentageIterations = 1;
             }
 
             if (currentOperationArr.length === 3) {
@@ -145,14 +159,15 @@ function updateDisplay(element, type) {
 
                 lastOperandUsed = currentOperationArr[2];
             } else if (currentOperationArr.length === 2) {
-                const calcResult = operate(currentOperationArr[0], currentOperationArr[0], lastOperatorUsed);
+                const secondOperand = (display.textContent == '0' || display.textContent == '-0') ? 0 : currentOperationArr[0];
+                const calcResult = operate(currentOperationArr[0], secondOperand, lastOperatorUsed);
 
                 clearDisplay();
 
                 display.textContent = calcResult.toString();
                 currentOperationString = calcResult.toString();
 
-                lastOperandUsed = currentOperationArr[0];
+                lastOperandUsed = secondOperand;
             } else if (currentOperationArr.length === 1) {
                 if (lastOperatorUsed == null) {
                     currentOperationString = '0';
@@ -188,6 +203,16 @@ function updateDisplay(element, type) {
             clearDisplay();
 
             if (percentValue != null) {
+                if (currentOperationArr.length === 2) {
+                    display.textContent = '-0';
+
+                    percentValue = null;
+                    percentageIterations = 1;
+
+                    newState = true;
+
+                    break;
+                }
                 if (!percentValue.toString().includes('-')) {
                     display.textContent = '-' + percentValue;
                     percentValue = '-' + percentValue;
