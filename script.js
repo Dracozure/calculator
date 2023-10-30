@@ -89,6 +89,12 @@ function updateDisplay(element, type) {
                 if (currentOperationArr.length === 1) {
                     currentOperationString = percentValue.toString();
                     currentOperationArr[0] = percentValue.toString();
+                } else if (currentOperationArr.length === 3) {
+                    currentOperationString = 
+                    currentOperationArr[0]
+                    + ` ${currentOperationArr[1]} `
+                    + percentValue;
+                    currentOperationArr[2] = percentValue;
                 }
 
                 percentValue = null;
@@ -119,6 +125,16 @@ function updateDisplay(element, type) {
 
             break;
         case 'equal':
+            if (percentValue != null) {
+                if (currentOperationArr.length === 3) {
+                    currentOperationString = 
+                    currentOperationArr[0]
+                    + ` ${currentOperationArr[1]} `
+                    + percentValue;
+                    currentOperationArr[2] = percentValue;
+                }
+            }
+
             if (currentOperationArr.length === 3) {
                 const calcResult = operate(currentOperationArr[0], currentOperationArr[2], currentOperationArr[1]);
 
