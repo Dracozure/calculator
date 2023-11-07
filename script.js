@@ -311,6 +311,10 @@ function updateDisplay(element, type) {
 
             break;
         case 'decimal':
+            if (Math.abs(+display.textContent).toString().length >= 9) {
+                return;
+            }
+            
             if (percentValue != null) {
                 clearDisplay();
                 percentageIterations = 1;
