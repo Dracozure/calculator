@@ -7,6 +7,7 @@ const display = document.getElementById('display');
 Array.from(numButtons).forEach(num => {
     num.addEventListener('click', () => {
         updateDisplay(num, 'number');
+        invertMathOp(num);
     });
 });
 
@@ -15,6 +16,7 @@ Array.from(mathOperatorButtons).forEach(operator => {
         if (display.textContent.length >= 1) {
             updateDisplay(operator, operator.id);
         }
+        invertMathOp(operator);
     });
 });
 
@@ -314,7 +316,7 @@ function updateDisplay(element, type) {
             if (Math.abs(+display.textContent).toString().length >= 9) {
                 return;
             }
-            
+
             if (percentValue != null) {
                 clearDisplay();
                 percentageIterations = 1;
@@ -463,4 +465,23 @@ function getPercentage(num) {
 
 function clearDisplay() {
     display.textContent = '';
+}
+
+let currentInvertedElement = null;
+
+function invertMathOp(element) {
+    const elementID = element.id;
+    const mathOperatorList = ['divide', 'plus', 'minus', 'multiply'];
+
+    if (elementID != 'plus-minus' && elementID != 'percent') {
+        if (currentInvertedElement != null) {
+            currentInvertedElement.classList.remove('invert');
+        }
+    }
+
+    if (mathOperatorList.includes(elementID)) {
+        element.classList.toggle('invert');
+
+        currentInvertedElement = element;
+    }
 }
