@@ -85,6 +85,11 @@ function updateDisplay(element, type) {
         case 'minus':
         case 'divide':
         case 'multiply':
+            if (display.textContent === 'Error') {
+                updateDisplay(null, 'all-clear');
+                display.textContent = 'Error';
+            }
+
             if (percentValue != null) {
                 if (currentOperationArr.length === 1) {
                     currentOperationString = percentValue.toString();
@@ -111,6 +116,10 @@ function updateDisplay(element, type) {
             if (currentOperationArr.length === 3) {
                 const calcResult = operate(currentOperationArr[0], currentOperationArr[2], currentOperationArr[1]);
 
+                if (display.textContent === 'Error') {
+                    return;
+                }
+
                 clearDisplay();
 
                 display.textContent = calcResult.toString();
@@ -132,6 +141,11 @@ function updateDisplay(element, type) {
 
             break;
         case 'equal':
+            if (display.textContent === 'Error') {
+                updateDisplay(null, 'all-clear');
+                display.textContent = 'Error';
+            }
+
             if (percentValue != null) {
                 if (currentOperationArr.length === 3) {
                     currentOperationString = 
@@ -152,6 +166,10 @@ function updateDisplay(element, type) {
             if (currentOperationArr.length === 3) {
                 const calcResult = operate(currentOperationArr[0], currentOperationArr[2], currentOperationArr[1]);
 
+                if (display.textContent === 'Error') {
+                    return;
+                }
+
                 clearDisplay();
 
                 display.textContent = calcResult.toString();
@@ -161,6 +179,10 @@ function updateDisplay(element, type) {
             } else if (currentOperationArr.length === 2) {
                 const secondOperand = (display.textContent == '0' || display.textContent == '-0') ? 0 : currentOperationArr[0];
                 const calcResult = operate(currentOperationArr[0], secondOperand, lastOperatorUsed);
+
+                if (display.textContent === 'Error') {
+                    return;
+                }
 
                 clearDisplay();
 
@@ -176,6 +198,10 @@ function updateDisplay(element, type) {
                 }
 
                 const calcResult = operate(currentOperationArr[0], lastOperandUsed, lastOperatorUsed);
+
+                if (display.textContent === 'Error') {
+                    return;
+                }
 
                 clearDisplay();
 
@@ -200,6 +226,10 @@ function updateDisplay(element, type) {
 
             break;
         case 'plus-minus':
+            if (display.textContent === 'Error') {
+                return;
+            }
+
             clearDisplay();
 
             if (percentValue != null) {
@@ -352,6 +382,10 @@ function updateDisplay(element, type) {
 
             break;
         case 'percent':
+            if (display.textContent === 'Error') {
+                return;
+            }
+
             clearDisplay();
 
             const negPosSign = (percentValue && percentValue.toString().includes('-')) ? -1 : 1;
@@ -390,6 +424,11 @@ function operate(a, b, operator) {
         case '×':
             return multiply(a, b);
         case '÷':
+            if (b == 0) {
+                updateDisplay(null, 'all-clear');
+                display.textContent = 'Error';
+                return 'Error';
+            }
             return divide(a, b);
     }
 }
