@@ -79,3 +79,18 @@ button.number#zero {
     justify-content: flex-end;
     align-items: flex-end;
 }
+
+/* Button Active States */
+
+button.number:active,
+button.decimal:active {
+    filter: brightness(150%);
+}
+
+button.operator.other:active {
+    filter: brightness(118%);
+}
+
+button.math.operator:active {
+    background-color: rgb(255, 189, 97);
+}
