@@ -31,6 +31,10 @@ function updateDisplay(element, type) {
 
     switch (type) {
         case 'number':
+            if (display.textContent.length > 8 && newState == false) {
+                return;
+            }
+
             if (percentValue != null) {
                 clearDisplay();
 
@@ -141,6 +145,8 @@ function updateDisplay(element, type) {
             lastOperatorUsed = element.textContent;
             newState = true;
 
+            processNumForDisplay();
+
             break;
         case 'equal':
             if (display.textContent === 'Error') {
@@ -216,6 +222,8 @@ function updateDisplay(element, type) {
 
             newState = true;
 
+            processNumForDisplay();
+
             break;
         case 'all-clear':
             display.textContent = '0';
@@ -243,9 +251,11 @@ function updateDisplay(element, type) {
 
                     newState = true;
 
+                    processNumForDisplay();
+
                     break;
                 }
-                if (!percentValue.toString().includes('-')) {
+                if (!percentValue.toString()[0].includes('-')) {
                     display.textContent = '-' + percentValue;
                     percentValue = '-' + percentValue;
                 } else {
@@ -255,11 +265,13 @@ function updateDisplay(element, type) {
 
                 newState = false;
 
+                processNumForDisplay();
+
                 break;
             }
 
             if (currentOperationArr.length === 3) {
-                if (currentOperationArr[2].includes('-')) {
+                if (currentOperationArr[2][0].includes('-')) {
                     currentOperationString = 
                     currentOperationArr[0]
                     + ` ${currentOperationArr[1]} `
@@ -280,7 +292,7 @@ function updateDisplay(element, type) {
                 const isOperatorFirstIndex = typeof +currentOperationArr[0] != 'number';
 
                 if (isOperatorFirstIndex) {
-                    if (currentOperationArr[1].includes('-')) {
+                    if (currentOperationArr[1][0].includes('-')) {
                         currentOperationString = ` ${currentOperationArr[0]} ${currentOperationArr[1].slice(1)}`;
 
                         display.textContent = currentOperationArr[1].slice(1);
@@ -298,7 +310,7 @@ function updateDisplay(element, type) {
                     display.textContent = '-0';
                 }
             } else if (currentOperationArr.length === 1) {
-                if (currentOperationArr[0].includes('-')) {
+                if (currentOperationArr[0][0].includes('-')) {
                     currentOperationString = currentOperationArr[0].slice(1);
 
                     display.textContent = currentOperationArr[0].slice(1);
@@ -311,9 +323,11 @@ function updateDisplay(element, type) {
 
             newState = false;
 
+            processNumForDisplay();
+
             break;
         case 'decimal':
-            if (Math.abs(+display.textContent).toString().length >= 9) {
+            if (Math.abs(+display.textContent).toString().length >= 9 && currentOperationArr.length == 1) {
                 return;
             }
 
@@ -392,9 +406,9 @@ function updateDisplay(element, type) {
                 return;
             }
 
-            clearDisplay();
+            const negPosSign = display.textContent[0].includes('-') ? -1 : 1;
 
-            const negPosSign = (percentValue && percentValue.toString().includes('-')) ? -1 : 1;
+            clearDisplay();
 
             if (currentOperationArr.length === 1) {
                 percentValue = currentOperationArr[0] / (100 ** percentageIterations);
@@ -412,10 +426,14 @@ function updateDisplay(element, type) {
                 }
             }
 
-            percentValue *= negPosSign;
+            if (negPosSign < 0 && +percentValue > 0 || negPosSign > 0 && +percentValue < 0) {
+                percentValue *= -1;
+            }
 
             display.textContent = percentValue.toString();
             percentageIterations++;
+
+            processNumForDisplay();
 
             return;
     }
@@ -484,4 +502,73 @@ function invertMathOp(element) {
 
         currentInvertedElement = element;
     }
+}
+
+function processNumForDisplay() {
+    const num = display.textContent;
+    const decimalLength = num.toString().includes('.') ? countDecimalDigits(num) : null;
+    let finalContent = null;
+
+    if (Math.abs(num) > 999999999) {
+        finalContent = Number.parseFloat(num).toExponential(5);
+    }
+
+    if (decimalLength > 8 && (Math.abs(num) < 1 && Math.abs(num) > 0)) {
+        finalContent = !num.includes('e') ? (+num).toFixed(8) : (+num).toExponential(5);
+    } else if (Math.abs(num) >= 1 && !num.includes('e')) {
+        const absValueNum = Math.abs(num);
+        const indexDecimal = absValueNum.toString().indexOf('.');
+        const firstHalfLength = (absValueNum.toString()).slice(0, indexDecimal).length;
+
+        if ((absValueNum.toString().length - 1) > 8 && indexDecimal != -1) {
+            const decimalPrecision = firstHalfLength > 8 ? 0 : 9 - firstHalfLength;
+
+            finalContent = (+num).toFixed(decimalPrecision);
+
+            if (Math.abs(finalContent) > 999999999) {
+                finalContent = Number.parseFloat(num).toExponential(5);
+            }
+        }
+    }
+
+    if (finalContent) {
+        const indexE = finalContent.includes('e') ? finalContent.indexOf('e') : null;
+        const eSubstr = finalContent.slice(indexE);
+        let preEDec = indexE ? finalContent.slice(0, indexE) : null;
+    
+        if (preEDec) {
+            while (preEDec[preEDec.length - 1] == '0') {
+                preEDec = preEDec.slice(0, -1);
+    
+                if (preEDec[preEDec.length - 1] == '.') {
+                    preEDec = preEDec.slice(0, -1);
+                    break;
+                }
+            }
+    
+            finalContent = (preEDec + eSubstr).replace('+', '');
+        } else if (finalContent.includes('.')) {
+            while (finalContent[finalContent.length - 1] == '0') {
+                finalContent = finalContent.slice(0, -1);
+    
+                if (finalContent[finalContent.length - 1] == '.') {
+                    finalContent = finalContent.slice(0, -1);
+                    break;
+                }
+            }
+        }
+        
+        display.textContent = finalContent;
+    }
+
+    if (finalContent) {
+        display.textContent = finalContent;
+    }
+}
+
+function countDecimalDigits(num) {
+    const indexDecimal = num.toString().indexOf('.');
+    const decimalSubstr = (indexDecimal != -1) ? num.toString().slice(indexDecimal + 1) : null;
+
+    return decimalSubstr == null? null : decimalSubstr.length;
 }
