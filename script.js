@@ -213,7 +213,7 @@ function updateDisplay(element, type) {
                 lastOperandUsed = secondOperand;
             } else if (currentOperationArr.length === 1) {
                 if (lastOperatorUsed == null) {
-                    currentOperationString = '0';
+                    currentOperationString = currentOperationArr[0];
 
                     break;
                 }
@@ -445,6 +445,8 @@ function updateDisplay(element, type) {
 
             display.textContent = percentValue.toString();
             percentageIterations++;
+
+            newState = true;
 
             processNumForDisplay();
 
