@@ -215,6 +215,8 @@ function updateDisplay(element, type) {
                 if (lastOperatorUsed == null) {
                     currentOperationString = currentOperationArr[0];
 
+                    newState = true;
+
                     break;
                 }
 
