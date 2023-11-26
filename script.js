@@ -340,7 +340,7 @@ function updateDisplay(element, type) {
 
             break;
         case 'decimal':
-            if (Math.abs(+display.textContent).toString().length >= 9 && currentOperationArr.length == 1) {
+            if (Math.abs(+display.textContent).toString().length >= 9 && newState == false) {
                 return;
             }
 
