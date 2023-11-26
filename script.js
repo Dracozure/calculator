@@ -4,10 +4,18 @@ const numButtons = document.querySelectorAll('.number');
 const mathOperatorButtons = document.querySelectorAll('.operator');
 const display = document.getElementById('display');
 
+const originalDisplayFontSize = window.getComputedStyle(display, null).getPropertyValue('font-size');
+let displayWidth = display.clientWidth;
+
 Array.from(numButtons).forEach(num => {
     num.addEventListener('click', () => {
         updateDisplay(num, 'number');
         invertMathOp(num);
+
+        display.style.fontSize = originalDisplayFontSize;
+        displayWidth = display.clientWidth;
+
+        optimizeDisplayFontSize();
     });
 });
 
@@ -17,6 +25,11 @@ Array.from(mathOperatorButtons).forEach(operator => {
             updateDisplay(operator, operator.id);
         }
         invertMathOp(operator);
+
+        display.style.fontSize = originalDisplayFontSize;
+        displayWidth = display.clientWidth;
+
+        optimizeDisplayFontSize();
     });
 });
 
@@ -571,4 +584,13 @@ function countDecimalDigits(num) {
     const decimalSubstr = (indexDecimal != -1) ? num.toString().slice(indexDecimal + 1) : null;
 
     return decimalSubstr == null? null : decimalSubstr.length;
+}
+
+function optimizeDisplayFontSize() {
+    while (displayWidth > 403) {
+        const currentFontSize = window.getComputedStyle(display, null).getPropertyValue('font-size');
+
+        display.style.fontSize = (parseFloat(currentFontSize) - 1).toString() + 'px';
+        displayWidth = display.clientWidth;
+    }
 }
